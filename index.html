@@ -5,6 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<script src="./qr.js"></script>
 </head>
 <body>
 <x-dc>
@@ -334,6 +335,27 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ enTelefono }}" hint-placeholder-val="{{ false }}">
+      <div style="animation: na-rise 450ms ease both; max-width: 480px; margin: 0 auto; text-align: center;">
+        <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-size: 34px; font-weight: 700; letter-spacing: -0.03em;">Escanea con tu teléfono</h1>
+        <div style="margin-top: 10px; font-size: 14.5px; color: rgba(27,59,42,0.65);">Apunta la cámara de tu celular a este código: se abre el escáner listo para leer la tira de tu ticket.</div>
+
+        <div data-na="qr-telefono" style="margin: 26px auto 0; width: 232px; height: 232px; border-radius: 22px; background: #FFFDF6; padding: 16px; box-shadow: 0 22px 50px rgba(27,59,42,0.18); display: flex; align-items: center; justify-content: center;"></div>
+
+        <a href="{{ enlaceEscaner }}" target="_blank" rel="noopener" style="display: inline-block; margin-top: 16px; font-family: ui-monospace, monospace; font-size: 13px; letter-spacing: 0.06em; color: #2E7D4F; text-decoration: none; border-bottom: 1.5px solid rgba(46,125,79,0.35); padding-bottom: 2px;">{{ enlaceEscanerCorto }} ↗</a>
+
+        <div style="margin-top: 22px; display: flex; flex-direction: column; gap: 10px;">
+          <sc-for list="{{ telefonoPasos }}" as="p" hint-placeholder-count="3">
+            <div style="display: grid; grid-template-columns: 18px 1fr; gap: 12px; text-align: left; font-size: 13px; line-height: 1.55; color: rgba(27,59,42,0.7);">
+              <span aria-hidden="true">{{ p.i }}</span><span>{{ p.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ abrirCamaraAqui }}" style="margin-top: 20px; width: 100%; padding: 14px; border: 1.5px solid #2E7D4F; border-radius: 14px; background: transparent; color: #14532D; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer;">¿Ya estás en tu teléfono? Abrir la cámara aquí</button>
+        <button onClick="{{ volverInicio }}" style="margin-top: 10px; padding: 12px; border: none; background: transparent; color: rgba(27,59,42,0.6); font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer; width: 100%;">Mejor escribo el folio</button>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ enAcceso }}" hint-placeholder-val="{{ false }}">
       <div style="animation: na-rise 500ms ease both; max-width: 520px; margin: 0 auto;">
         <h1 style="margin: 0; font-family: 'Outfit', system-ui, sans-serif; font-size: 40px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.02;">Tus facturas,<br />siempre a mano.</h1>
@@ -546,6 +568,50 @@ class Component extends DCLogic {
 
   set(k) { return e => this.setState({ [k]: e.target.value }); }
 
+  enlaceEscaner = (() => {
+    try {
+      const u = new URL(window.location.href);
+      u.search = "";
+      u.hash = "";
+      const base = u.toString().replace(/\/$/, "");
+      return base + "/?escanear=1";
+    } catch (e) {
+      return "https://factura100.folios.works/?escanear=1";
+    }
+  })();
+
+  pintaQrTelefono() {
+    if (this.state.fase !== 8 || typeof qrcode !== "function") return;
+    const caja = document.querySelector('[data-na="qr-telefono"]');
+    if (!caja || caja.getAttribute("data-na-qr-listo") === this.enlaceEscaner) return;
+    try {
+      const qr = qrcode(0, "M");
+      qr.addData(this.enlaceEscaner);
+      qr.make();
+      const n = qr.getModuleCount();
+      const cell = 200 / n;
+      let rects = "";
+      for (let row = 0; row < n; row++) {
+        for (let col = 0; col < n; col++) {
+          if (qr.isDark(row, col)) rects += "M" + Math.round(col * cell) + " " + Math.round(row * cell) + "h" + Math.ceil(cell) + "v" + Math.ceil(cell) + "h-" + Math.ceil(cell) + "z";
+        }
+      }
+      caja.innerHTML = '<svg viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Código QR para abrir el escáner en tu teléfono"><path d="' + rects + '" fill="#14532D"/></svg>';
+      caja.setAttribute("data-na-qr-listo", this.enlaceEscaner);
+    } catch (e) { /* el QR es adorno: el enlace debajo siempre funciona */ }
+  }
+
+  iniciarEscaneo() {
+    this.setState({ fase: 7, detectado: false, folio: "TKT-2026-0413" });
+    clearTimeout(this._s);
+    this._s = setTimeout(() => {
+      this.setState({ detectado: true });
+      this._s2 = setTimeout(() => this.setState({ fase: 2, detectado: false }), 1100);
+    }, 2200);
+  }
+
+  componentDidUpdate() { this.pintaQrTelefono(); }
+
   emitirAhora() {
     this.setState({ fase: 3 });
     clearTimeout(this._t);
@@ -566,6 +632,10 @@ class Component extends DCLogic {
     window.addEventListener("resize", this._mide);
     this._mide();
     this._mideT = setInterval(this._mide, 600);
+    // Llegó escaneando el QR desde su teléfono: abrir el escáner directo.
+    try {
+      if (new URLSearchParams(window.location.search).get("escanear") === "1") this.iniciarEscaneo();
+    } catch (e) { /* sin URL API: ignorar */ }
   }
   componentWillUnmount() {
     window.removeEventListener("scroll", this._mide);
@@ -918,14 +988,16 @@ class Component extends DCLogic {
         { i: s.detectado ? "✓" : "2", t: "El código trae la venta firmada: sucursal, monto y folio. Nadie puede alterarlo.", c: s.detectado ? "#2E7D4F" : "rgba(27,59,42,0.7)" },
         { i: s.detectado ? "✓" : "3", t: "Si ya facturaste antes con este correo, tus datos se llenan solos.", c: s.detectado ? "#2E7D4F" : "rgba(27,59,42,0.7)" }
       ],
-      abrirEscaner: () => {
-        this.setState({ fase: 7, detectado: false, folio: "TKT-2026-0413" });
-        clearTimeout(this._s);
-        this._s = setTimeout(() => {
-          this.setState({ detectado: true });
-          this._s2 = setTimeout(() => this.setState({ fase: 2, detectado: false }), 1100);
-        }, 2200);
-      },
+      abrirEscaner: () => this.setState({ fase: 8 }),
+      abrirCamaraAqui: () => this.iniciarEscaneo(),
+      enTelefono: s.fase === 8,
+      enlaceEscaner: this.enlaceEscaner,
+      enlaceEscanerCorto: this.enlaceEscaner.replace(/^https:\/\//, ""),
+      telefonoPasos: [
+        { i: "1", t: "Abre la cámara de tu teléfono y apunta a este código." },
+        { i: "2", t: "Se abre el escáner de 100% Natural, listo para leer tu tira." },
+        { i: "3", t: "Escanea el QR del comprobante y tu factura empieza sola." }
+      ],
       irAcceso: () => this.setState({ fase: s.sesion ? 6 : 5 }),
       accesoTxt: s.sesion ? "Mis facturas" : "Entrar",
       enAcceso: s.fase === 5,
