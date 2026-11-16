@@ -66,6 +66,10 @@ img, svg { max-width: 100%; }
 }
 #na-shell img { width: 168px; height: auto; opacity: 0.95; }
 #na-shell.is-gone { opacity: 0; visibility: hidden; }
+#na-boot-fallback { max-width: 36rem; margin: 12vh auto; padding: 0 24px; font-family: system-ui, sans-serif; color: var(--na-tinta); }
+#na-boot-fallback h1 { font-family: var(--na-font-display); font-size: 1.75rem; letter-spacing: -0.03em; }
+#na-boot-fallback p { font-size: 1.05rem; line-height: 1.6; color: var(--na-tinta-suave); }
+#na-boot-fallback a { color: var(--na-hoja); }
 x-dc { display: none !important; }
 
 /* --- Accesibilidad --------------------------------------------------------- */
@@ -87,12 +91,14 @@ x-dc { display: none !important; }
 html [data-na="nav"] :where(a, button):focus-visible,
 html [data-na="footer"] :where(a, button):focus-visible { outline-color: var(--na-crema) !important; }
 input:focus-visible, select:focus-visible {
-  outline: none !important;
+  /* transparent, not none: forced-colors / High Contrast still paints the outline */
+  outline: 3px solid transparent !important;
+  outline-offset: 3px !important;
   border-color: var(--na-hoja) !important;
   box-shadow: 0 0 0 4px rgba(46, 125, 79, 0.18) !important;
 }
 button:not(:disabled) { -webkit-tap-highlight-color: transparent; }
-button:not(:disabled):active { transform: translateY(0) scale(0.985) !important; }
+button:not(:disabled):active { scale: 0.985; }
 button:disabled { cursor: not-allowed !important; }
 
 /* --- Navegación: cápsula de vidrio para que el texto contraste sobre el degradado --- */

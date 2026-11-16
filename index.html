@@ -47,6 +47,12 @@
 <body>
 <a class="na-skip" href="#contenido">Saltar al contenido</a>
 <div id="na-shell" aria-hidden="true"><img src="./assets/img/na-logo-300.webp" width="300" height="159" alt="" fetchpriority="high"></div>
+<div id="na-boot-fallback" hidden>
+  <main>
+    <h1>Factura tu consumo · 100% Natural</h1>
+    <p>No pudimos abrir el portal. Recarga la página o escríbenos a <a href="mailto:facturacion@100natural.com">facturacion@100natural.com</a> con tu folio y tus datos fiscales.</p>
+  </main>
+</div>
 <noscript><style>#na-shell{display:none}</style><main style="max-width:36rem;margin:12vh auto;padding:0 24px;font-family:system-ui,sans-serif;color:#1B3B2A"><h1>Factura tu consumo · 100% Natural</h1><p>Este portal necesita JavaScript para funcionar. Si prefieres, escríbenos a <a href="mailto:facturacion@100natural.com">facturacion@100natural.com</a> con tu folio y tus datos fiscales.</p></main></noscript>
 <x-dc>
 <helmet>
@@ -1084,11 +1090,41 @@ class Component extends DCLogic {
   (function () {
     var shell = document.getElementById("na-shell");
     if (!shell) return;
-    var done = function () { shell.classList.add("is-gone"); setTimeout(function () { shell.remove(); }, 400); };
-    var check = function () { if (document.querySelector("[data-screen-label]")) { obs.disconnect(); done(); return true; } return false; };
-    var obs = new MutationObserver(check);
+    var gone = false;
+    var obs = null;
+    function hideShell() {
+      if (gone) return;
+      gone = true;
+      shell.classList.add("is-gone");
+      setTimeout(function () { shell.remove(); }, 400);
+    }
+    function showFallback() {
+      var fb = document.getElementById("na-boot-fallback");
+      if (fb) fb.hidden = false;
+      hideShell();
+    }
+    function mounted() {
+      var fb = document.getElementById("na-boot-fallback");
+      if (fb) fb.hidden = true;
+      hideShell();
+      if (obs) obs.disconnect();
+    }
+    function check() {
+      // The marker also lives inside the hidden <x-dc> template. Only the copy
+      // rendered into #dc-root means the runtime actually mounted.
+      if (document.querySelector("#dc-root [data-screen-label]")) { mounted(); return true; }
+      return false;
+    }
+    obs = new MutationObserver(check);
     obs.observe(document.documentElement, { childList: true, subtree: true });
-    setTimeout(function () { obs.disconnect(); done(); }, 6000);
+    if (check()) return;
+    setTimeout(function () { if (!check()) showFallback(); }, 6000);
+    window.addEventListener("error", function (e) {
+      var t = e.target;
+      if (!t || t.tagName !== "SCRIPT") return;
+      var src = t.getAttribute("src") || "";
+      if (/support\.js|react(?:\.production|-dom)/.test(src) && !check()) showFallback();
+    }, true);
   })();
 </script>
 </body>

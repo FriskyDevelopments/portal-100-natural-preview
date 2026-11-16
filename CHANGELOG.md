@@ -22,6 +22,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). F
 - Tipografía del héroe fluida (`clamp`) y más grande en móvil; botón de Fausto más compacto en pantallas chicas.
 - `prefers-reduced-motion`: todas las animaciones quedan en su estado final.
 
+### Corregido
+- Si React o `support.js` no arrancan, el shell de arranque se retira (a los 6 s, o al fallar la carga) y aparece un aviso con el correo de facturación, en lugar de una pantalla en blanco.
+- El foco de campos conserva un contorno transparente (visible en contraste forzado). El botón al pulsarse usa `scale` y ya no pisa un `transform` de posición.
+
 ### Quitado
 - `image-slot.js` (65 KB que no se usaban en la página).
 

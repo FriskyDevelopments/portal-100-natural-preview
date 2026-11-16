@@ -40,7 +40,7 @@ Contraste mínimo 4.5:1 en texto normal. Sobre verde, el crema no baja de 0.8 de
 - `prefers-reduced-motion: reduce` anula animaciones y transiciones de forma global.
 
 ## Accesibilidad
-- Foco visible: anillo `--na-sol` de 3px (crema sobre nav y pie); los campos usan borde `--na-hoja` + halo.
+- Foco visible: anillo `--na-sol` de 3px (crema sobre nav y pie); los campos usan borde `--na-hoja` + halo, y conservan un `outline` transparente para que el foco se vea en modo de contraste forzado.
 - Todo lo que se pulsa es `<button>` o `<a>`. Los botones de solo ícono llevan `aria-label` o texto oculto.
 - Mensajes que cambian solos (validación del folio) llevan `aria-live="polite"`.
 - Probar con Tab de principio a fin y con Lighthouse antes de fusionar.
