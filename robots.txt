@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://factura100.folios.works/sitemap.xml
