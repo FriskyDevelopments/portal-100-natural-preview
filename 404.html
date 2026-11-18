@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Esta página no existe · 100% Natural</title>
+<meta name="description" content="La página que buscas no existe. Vuelve al portal para facturar tu consumo de 100% Natural.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#14532D">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/outfit-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<style>
+  :root { --bosque:#14532D; --hoja:#2E7D4F; --sol:#F2C14E; --tinta:#1B3B2A; --crema:#FFFDF6; --arena:#EFEADC; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; min-height: 100%; display: grid; place-items: center; padding: 32px 20px;
+    background: radial-gradient(90% 70% at 15% 0%, rgba(46,125,79,0.20), transparent 60%),
+                radial-gradient(80% 60% at 100% 100%, rgba(242,193,78,0.28), transparent 60%), var(--arena);
+    color: var(--tinta); font-family: 'Nunito Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { width: min(560px, 100%); text-align: center; }
+  .sello {
+    display: inline-block; font: 700 12px/1 'Outfit', system-ui, sans-serif; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--bosque); background: linear-gradient(96deg, #DCE9DB, #F7E7B8); padding: 9px 16px; border-radius: 999px;
+  }
+  .num {
+    margin: 22px 0 0; font: 700 clamp(96px, 26vw, 168px)/0.82 'Outfit', system-ui, sans-serif; letter-spacing: -0.06em;
+    background: linear-gradient(96deg, #2E7D4F, #6BAE5F 30%, #F2C14E 62%, #E8952F);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h1 { margin: 18px 0 0; font: 700 clamp(28px, 6vw, 40px)/1.05 'Outfit', system-ui, sans-serif; letter-spacing: -0.03em; text-wrap: balance; }
+  p { margin: 14px auto 0; max-width: 30em; font-size: 17px; line-height: 1.6; color: rgba(27,59,42,0.78); text-wrap: pretty; }
+  .acciones { margin-top: 30px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  a.btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 15px 22px; border-radius: 14px; text-decoration: none;
+    font: 700 15px/1 'Outfit', system-ui, sans-serif; transition: transform 200ms cubic-bezier(0.16,1,0.3,1), box-shadow 200ms ease;
+  }
+  a.primario { background: var(--bosque); color: var(--crema); box-shadow: 0 10px 24px rgba(20,83,45,0.22); }
+  a.secundario { border: 1.5px solid var(--hoja); color: var(--bosque); }
+  a.btn:hover { transform: translateY(-2px); }
+  a:focus-visible { outline: 3px solid var(--sol); outline-offset: 3px; }
+  footer { margin-top: 44px; font: 500 12px/1.4 'Outfit', system-ui, sans-serif; color: rgba(27,59,42,0.74); }
+  footer a { color: var(--bosque); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <span class="sello">Folio no encontrado</span>
+  <div class="num" aria-hidden="true">404</div>
+  <h1>Este ticket no está en la cuenta.</h1>
+  <p>La página que buscas no existe o cambió de lugar. Tu factura sigue a dos pasos desde el inicio.</p>
+  <div class="acciones">
+    <a class="btn primario" href="/">Facturar mi consumo</a>
+    <a class="btn secundario" href="mailto:facturacion@100natural.com">Escribir a facturación</a>
+  </div>
+  <footer>100% Natural · portal hecho con <a href="https://folios.works">Folios</a></footer>
+</main>
+</body>
+</html>
